@@ -1,5 +1,7 @@
 // Select DOM Elements
-const addNewNote = document.getElementById('addNewElement');
+const addNewNote = document.getElementById('addNewNote');
+const notesContainer = document.getElementById('notesContainter');
+const popupContent = document.getElementById('popupContent');
 
 function showPopup(innerHTML) {
     if (popupContent.hasChildNodes()) { return; } // Avoids adding multiple layers of popup
