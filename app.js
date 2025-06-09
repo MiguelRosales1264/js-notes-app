@@ -22,6 +22,7 @@ function closePopup() {
 
 function saveNotes() {
     localStorage.setItem('notes', JSON.stringify(notes));
+    updateNoteCount();
 }
 
 // Adds new notes and saves edited notes to notes array
