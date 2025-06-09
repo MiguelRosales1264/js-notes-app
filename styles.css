@@ -22,7 +22,6 @@ ul {
 
 h1 {
     text-align: center;
-    color: #111827;
 }
 
 .container {
@@ -30,8 +29,8 @@ h1 {
     margin: auto;
     padding: 1.5rem;
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    background-color: #f9fafb;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 10);
+    background-color: #f4f4f4;
 }
 
 
