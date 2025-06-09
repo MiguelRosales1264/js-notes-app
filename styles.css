@@ -139,3 +139,28 @@ button:hover {
     font-size: 1.5rem;
 }
 
+.note-form {
+    width: 500px !important;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.5em;
+}
+
+.note-form input,
+.note-form textarea {
+    /* background-color: #f9f9f9; */
+    font-family: 'Segoe UI', sans-serif;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    resize: none;
+}
+
+.note-form textarea {
+    height: 200px;
+}
+
