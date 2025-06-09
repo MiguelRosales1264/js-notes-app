@@ -11,6 +11,23 @@ body {
     color: #333;
 }
 
+/* Styling for search result matches */
+mark {
+    background-color: #bae6fd;
+    color: #2563eb;
+    padding: 0 2px;
+    border-radius: 3px;
+}
+
+/* Styling for quotes in notes */
+blockquote {
+    margin: 1rem 0;
+    padding: 0.5rem 1rem;
+    border-left: 4px solid #3b82f6;
+    background-color: #f0f9ff;
+    color: #1e40af;
+}
+
 ul {
     display: flex;
     flex-direction: column;
@@ -32,7 +49,6 @@ h1 {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 10);
     background-color: #f4f4f4;
 }
-
 
 button {
     background-color: #3b82f6;
@@ -67,9 +83,9 @@ button:hover {
 }
 
 .header-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
     font-weight: bold;
 }
 
@@ -79,11 +95,10 @@ button:hover {
     align-items: center;
     position: relative;
     max-width: 300px;
-    width: 100%;
     border: 1px solid #ccc;
     border-radius: 20px;
     padding: 0 0.5rem;
-    background-color: white;
+    background: white;
 }
 
 .search-bar input {
@@ -91,11 +106,264 @@ button:hover {
     padding: 0.8rem 0.5rem;
     outline: none;
     width: 100%;
-    font-size: 1rem;
 }
 
 .search-icon {
     margin-right: 0.5rem;
     font-size: 1.2rem;
-    pointer-events: none;
+    pointer-events: none; /* Prevents the icon from capturing clicks */
+    /* cursor: pointer; */
+}
+
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup .delete-popup,
+.popup .edit-popup,
+.popup .add-popup {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1em;
+}
+
+.popup-actions button {
+    margin-top: 1rem;
+}
+
+.popup-header button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+}
+
+.delete-popup button {
+    background-color: #f87171;
+}
+
+.delete-popup button:hover {
+    background-color: #dc2626;
+}
+
+.note-form {
+    width: 500px !important;
+    display: flex;
+    flex-direction: column;
+    justify-self: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.note-form input,
+.note-form textarea {
+    font-family: 'Segoe UI', sans-serif;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    resize: none;
+    /* box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1); */
+}
+
+.note-form textarea {
+    height: 200px;
+}
+
+.note-options input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+/* Masonry layout using CSS columns */
+.notes-container {
+    column-count: 3; /* Adjust as needed for your screen size */
+    column-gap: 1rem;
+    /* Remove grid properties */
+}
+
+.note {
+    display: block;
+    break-inside: avoid;
+    margin-bottom: 1rem;
+    /* Remove flex if you want pure content height */
+    background-color: white;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    cursor: grab;
+    transition: all 0.3s ease;
+}
+
+/* Original Grid Layout */
+/* .notes-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+    align-items: start;
+} */
+
+/* .note {
+    background-color: white;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    cursor: grab;
+    transition: all 0.3s ease;
+} */
+
+.note:last-child {
+    margin-bottom: 0;
+}
+
+.note:hover {
+    transform: translateY(-2px);
+}
+
+.note:active {
+    cursor: grabbing;
+    transform: translateY(0);
+}
+
+.note.dragging {
+    opacity: 0.8;
+    background: #e0f2fe;
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.note.done {
+    opacity: 0.6;
+}
+
+.note-title {
+    word-break: break-word;
+}
+
+.note.done .note-title,
+.note.done .note-content {
+    text-decoration: line-through;
+}
+
+.note .note-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+
+.note .note-title {
+    font-weight: bold;
+    word-wrap: break-word;
+}
+
+.note .note-content {
+    margin-bottom: 1rem;
+    white-space: pre-wrap;
+}
+
+.note .note-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.note button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.note button:hover {
+    opacity: 0.7;
+}
+
+.checklist-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.checklist-item input[type="checkbox"] {
+    transform: scale(1.1);
+    accent-color: #3b82f6;
+}
+
+
+@media (max-width: 600px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .note-form {
+        width: 100% !important;
+    }
+
+    .popup .delete-popup,
+    .popup .edit-popup,
+    .popup .add-popup,
+    .popup .undo-popup {
+        padding: 1rem;
+        width: 90%;
+    }
+
+    .note {
+        font-size: 0.95rem;
+    }
+
+    .header-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .header-right {
+        align-items: center;
+        flex-direction: column;
+        align-self: flex-end;
+        gap: 0.25rem;
+    }
+
+    .search-bar {
+        width: 100%;
+    }
+
+    .notes-container {
+        column-count: 1;
+    }
+
+    .note-form input,
+    .note-form textarea {
+        font-size: 1rem;
+        padding: 0.6rem;
+    }
+
+    .note-form button {
+        font-size: 1rem;
+    }
 }
