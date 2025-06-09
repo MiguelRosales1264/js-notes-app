@@ -25,6 +25,25 @@ function saveNotes() {
     updateNoteCount();
 }
 
+
+// Renders all notes or notes containing query value
+function renderNotes(query = '') {
+    notesContainer.innerHTML = ''; // Clears prev notes
+
+    const filteredNotes = notes.filter((note) => {
+        const titleMatch = typeof note.title === 'string' && note.title.toLowerCase().includes(query);
+        const contentMatch = typeof note.content === 'string' && note.content.toLowerCase().includes(query);
+
+        return titleMatch || contentMatch;
+    });
+
+    filteredNotes.forEach((note) => {
+        const noteElement = createNoteElement(note, query);
+        notesContainer.appendChild(noteElement);
+    });
+    saveNotes();
+}
+
 // Adds new notes and saves edited notes to notes array
 function saveNote({ id = null, title, content }) {
     // Do not save if title is empty
@@ -98,5 +117,5 @@ function addNotesPopup() {
     const noteContentInput = document.getElementById('noteContent');
     const addNoteBtn = document.getElementById('addNoteBtn');
 
-    handleKeyBinds();
+    handleKeyBinds(null, noteTitleInput, noteContentInput, addNoteBtn);
 }
