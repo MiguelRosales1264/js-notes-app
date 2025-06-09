@@ -9,8 +9,19 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="header-top"></div>
-            <div class="header-bottom"></div>
+            <div class="header-top">
+                <h1>📝 My Notes</h1>
+            </div>
+            <div class="header-bottom">
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Search notes...">
+                    <span class="search-icon">🔍</span>
+                </div>
+                <div class="header-right">
+                    <p id="noteCount" class="note-count">0 Notes</p>
+                    <button id="addNewNote" class="add-note-btn">+</button>
+                </div>
+            </div>
         </div>
 
         <div id="notesContainer" class="notes-container"></div>
