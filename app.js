@@ -31,7 +31,7 @@ let notes = JSON.parse(localStorage.getItem('notes')) || [];
 if (notes.length !== 0) { renderNotes(); }
 
 function updateNoteCount() {
-    noteCount.textContent = `${notes.length} notes`;
+    noteCount.textContent = `${notes.length} Notes`;
 }
 
 function showPopup(innerHTML) {
