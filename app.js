@@ -42,15 +42,36 @@ function saveNote({ id = null, title, content }) {
     closePopup();
 }
 
+function bindEnterToInput(input, callback) {
+    input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault(); // Prevent default newline behavior
+            callback();
+        }
+    });
+}
+
 function handleKeyBinds( id = null, titleInput, contentInput, button ) {
     // Handle the button click
     button.addEventListener('click', () => {
-        saveNote();
+        saveNote({
+            id: id,
+            title: titleInput.value,
+            content: contentInput.value,
+        });
     });
 
     // Allow 'Enter' key to submit note
-    bindEnterToInput()
-    bindEnterToInput()
+    bindEnterToInput(titleInput, () => saveNote({
+        id: id,
+        title: titleInput.value,
+        content: contentInput.value,
+    }));
+    bindEnterToInput(contentInput, () => saveNote({
+        id: id,
+        title: titleInput.value,
+        content: contentInput.value,
+    }));
 }
 
 function addNotesPopup() {
