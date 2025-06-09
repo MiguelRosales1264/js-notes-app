@@ -5,9 +5,13 @@ function showPopup(innerHTML) {
     if (popupContent.hasChildNodes()) { return; } // Avoids adding multiple layers of popup
     const popup = document.createElement('div');
 
-    // popup.className = 'popup';
+    popup.className = 'popup';
     popup.innerHTML = innerHTML;
     popupContent.appendChild(popup);
+}
+
+function closePopup() {
+    popupContent.innerHTML = '';
 }
 
 function addNotesPopup() {
