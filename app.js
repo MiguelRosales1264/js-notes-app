@@ -20,6 +20,10 @@ function closePopup() {
     popupContent.innerHTML = '';
 }
 
+function saveNotes() {
+    localStorage.setItem('notes', JSON.stringify(notes));
+}
+
 // Adds new notes and saves edited notes to notes array
 function saveNote({ id = null, title, content }) {
     // Do not save if title is empty
