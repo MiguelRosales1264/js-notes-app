@@ -2,6 +2,8 @@
 const addNewNote = document.getElementById('addNewNote');
 const notesContainer = document.getElementById('notesContainter');
 const popupContent = document.getElementById('popupContent');
+const searchInput = document.getElementById('searchInput');
+const noteCount = document.getElementById('noteCount');
 
 // Create empty array to store the notes in memory
 let notes = JSON.parse(localStorage.getItem('notes')) || [];
@@ -18,6 +20,10 @@ function showPopup(innerHTML) {
 
 function closePopup() {
     popupContent.innerHTML = '';
+}
+
+function updateNoteCount() {
+    noteCount.textContent = `${notes.length} notes`;
 }
 
 function saveNotes() {
