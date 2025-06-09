@@ -31,7 +31,6 @@ function saveNotes() {
     updateNoteCount();
 }
 
-
 // Renders all notes or notes containing query value
 function renderNotes(query = '') {
     notesContainer.innerHTML = ''; // Clears prev notes
@@ -63,7 +62,11 @@ function saveNote({ id = null, title, content }) {
         notes.push({
             id: Date.now(),
             title,
-            content
+            content,
+            isDone: false,
+            pinned: false,
+            // createdAt: new Date().toLocaleString(),
+            // updatedAt: new Date().toLocaleString(),
         });
     }
 
