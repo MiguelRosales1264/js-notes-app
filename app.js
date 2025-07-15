@@ -63,16 +63,16 @@ function handleKeyBinds(id = null, titleInput, contentInput, button) {
     });
 
     // Allow 'Enter' key to submit note as well
-    bindEnterToInput(titleInput, () => saveNote({
-        id: id,
-        title: titleInput.value,
-        content: contentInput.value
-    }));
-    bindEnterToInput(contentInput, () => saveNote({
-        id: id,
-        title: titleInput.value,
-        content: contentInput.value
-    }));
+    // bindEnterToInput(titleInput, () => saveNote({
+    //     id: id,
+    //     title: titleInput.value,
+    //     content: contentInput.value
+    // }));
+    // bindEnterToInput(contentInput, () => saveNote({
+    //     id: id,
+    //     title: titleInput.value,
+    //     content: contentInput.value
+    // }));
 }
 
 // Adds new notes and saves edited notes to notes array
