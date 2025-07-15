@@ -30,6 +30,65 @@ marked.setOptions({ renderer, gfm: true });
 let notes = JSON.parse(localStorage.getItem('notes')) || [];
 if (notes.length !== 0) { renderNotes(); }
 
+// Function to convert markdown to plain text for editing (preserves checklists)
+function markdownToPlainText(markdown) {
+    return markdown
+        .replace(/^#{1,6}\s+/gm, '') // Remove headers
+        .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold
+        .replace(/\*(.*?)\*/g, '$1') // Remove italic
+        .replace(/`(.*?)`/g, '$1') // Remove inline code
+        .replace(/^\>\s+/gm, '') // Remove blockquotes
+        .replace(/^\s*[-\*\+]\s+(?!\[[ xX]\])/gm, '• ') // Convert lists to bullets BUT preserve checklists
+        .replace(/^\s*\d+\.\s+/gm, '• ') // Convert numbered lists to bullets
+        .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1') // Remove links, keep text
+        .trim();
+}
+
+// Function to show markdown guide
+function showMarkdownGuide() {
+    showPopup(`
+        <div class='markdown-guide'>
+            <div class='popup-header'>
+                <h3>📝 Markdown Guide</h3>
+                <button onclick='closePopup()'>❌</button>
+            </div>
+            <div style="text-align: left; padding: 1rem;">
+                <h4>Headers</h4>
+                <div class="example">
+                    <code># Header 1</code><br>
+                    <code>## Header 2</code><br>
+                    <code>### Header 3</code>
+                </div>
+
+                <h4>Text Formatting</h4>
+                <div class="example">
+                    <code>**Bold text**</code><br>
+                    <code>*Italic text*</code><br>
+                    <code>\`Inline code\`</code>
+                </div>
+
+                <h4>Lists</h4>
+                <div class="example">
+                    <code>- Bullet point</code><br>
+                    <code>1. Numbered list</code><br>
+                    <code>- [ ] Unchecked task</code><br>
+                    <code>- [x] Checked task</code>
+                </div>
+
+                <h4>Quotes</h4>
+                <div class="example">
+                    <code>> This is a quote</code>
+                </div>
+
+                <h4>Links</h4>
+                <div class="example">
+                    <code>[Link text](https://example.com)</code>
+                </div>
+            </div>
+        </div>
+    `);
+}
+
 function updateNoteCount() {
     noteCount.textContent = `${notes.length} Notes`;
 }
@@ -114,12 +173,29 @@ function addNotesPopup() {
     showPopup(`
         <div class='add-popup'>
             <div class='popup-header'>
-                <h3>Add New Note</h3>
+                <h3>✏️ Add New Note</h3>
                 <button onclick='closePopup()'>❌</button>
             </div>
             <div class="note-form">
                 <input type="text" id="noteTitle" placeholder="Note title..." />
-                <textarea id="noteContent" placeholder="Write your note..."></textarea>
+                
+                <div class="view-toggle">
+                    <button class="toggle-option active" data-view="edit">📝 Write</button>
+                    <button class="toggle-option" data-view="preview">👁️ Preview</button>
+                </div>
+                
+                <div class="edit-view">
+                    <div class="view-header">
+                        <div class="view-title">
+                            <span id="viewTitle">📝 Write your note</span>
+                        </div>
+                        <button type="button" class="help-button" onclick="showMarkdownGuide()" title="Markdown Help">?</button>
+                    </div>
+                    
+                    <textarea id="noteContent" placeholder="Write your note... (supports markdown)" style="display: block;"></textarea>
+                    <div id="markdownPreview" class="markdown-preview" style="display: none;"></div>
+                </div>
+                
                 <button id="addNoteBtn" type="button">Add Note</button>
             </div>
         </div>
@@ -128,6 +204,82 @@ function addNotesPopup() {
     const noteTitleInput = document.getElementById('noteTitle');
     const noteContentInput = document.getElementById('noteContent');
     const addNoteBtn = document.getElementById('addNoteBtn');
+    const previewDiv = document.getElementById('markdownPreview');
+    const viewTitle = document.getElementById('viewTitle');
+    const toggleOptions = document.querySelectorAll('.toggle-option');
+
+    let currentView = 'edit';
+
+    // Function to update preview
+    function updatePreview() {
+        const content = noteContentInput.value;
+        if (!previewDiv.hasAttribute('contenteditable')) {
+            previewDiv.innerHTML = content ? marked.parse(content) : '';
+        }
+    }
+
+    // Function to sync preview back to textarea
+    function syncPreviewToTextarea() {
+        if (previewDiv.hasAttribute('contenteditable')) {
+            noteContentInput.value = previewDiv.textContent || '';
+        }
+    }
+
+    // Toggle between edit and preview
+    function switchView(view) {
+        currentView = view;
+        
+        // Update toggle buttons
+        toggleOptions.forEach(option => {
+            option.classList.toggle('active', option.dataset.view === view);
+        });
+
+        if (view === 'edit') {
+            // Switch to text editing mode
+            previewDiv.removeAttribute('contenteditable');
+            noteContentInput.style.display = 'block';
+            previewDiv.style.display = 'none';
+            viewTitle.textContent = '📝 Write your note';
+        } else {
+            // Switch to live preview editing mode
+            syncPreviewToTextarea(); // Sync any changes first
+            updatePreview(); // Update the preview
+            previewDiv.setAttribute('contenteditable', 'true');
+            noteContentInput.style.display = 'none';
+            previewDiv.style.display = 'block';
+            viewTitle.textContent = '👁️ Live Preview (Editable)';
+        }
+    }
+
+    // Add toggle event listeners
+    toggleOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            switchView(option.dataset.view);
+        });
+    });
+
+    // Update preview on input (for when switching to preview)
+    noteContentInput.addEventListener('input', updatePreview);
+
+    // Handle preview editing - sync back to textarea on input
+    previewDiv.addEventListener('input', () => {
+        if (previewDiv.hasAttribute('contenteditable')) {
+            noteContentInput.value = previewDiv.textContent || '';
+        }
+    });
+
+    // Handle paste in preview - convert to plain text
+    previewDiv.addEventListener('paste', (e) => {
+        if (previewDiv.hasAttribute('contenteditable')) {
+            e.preventDefault();
+            const text = (e.clipboardData || window.clipboardData).getData('text');
+            document.execCommand('insertText', false, text);
+            syncPreviewToTextarea();
+        }
+    });
+
+    // Initial preview update
+    updatePreview();
 
     handleKeyBinds(null, noteTitleInput, noteContentInput, addNoteBtn);
 }
@@ -136,20 +288,35 @@ function editNotePopup(id) {
     const note = notes.find((note) => note.id === id);
     if (!note) { return; }
     const { title, content } = note;
+    const plainTextContent = markdownToPlainText(content);
 
     showPopup(`
         <div class='edit-popup'>
             <div class='popup-header'>
-                <h3>Edit Note</h3>
+                <h3>✏️ Edit Note</h3>
                 <button onclick='closePopup()'>❌</button>
             </div>
 
             <div class="note-form">
-                <input type="text" id="editTitle" value='${title}' />
-                <textarea id="editContent">${content}</textarea>
-            </div>
+                <input type="text" id="editTitle" value='${title.replace(/'/g, "&#39;")}' />
+                
+                <div class="view-toggle">
+                    <button class="toggle-option active" data-view="edit">📝 Edit</button>
+                    <button class="toggle-option" data-view="preview">👁️ Preview</button>
+                </div>
+                
+                <div class="edit-view">
+                    <div class="view-header">
+                        <div class="view-title">
+                            <span id="viewTitle">📝 Edit your note</span>
+                        </div>
+                        <button type="button" class="help-button" onclick="showMarkdownGuide()" title="Markdown Help">?</button>
+                    </div>
+                    
+                    <textarea id="editContent" style="display: block;">${plainTextContent.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                    <div id="markdownPreview" class="markdown-preview" style="display: none;"></div>
+                </div>
 
-            <div class='popup-actions'>
                 <button id='saveEditBtn' type='button'>Save Note</button>
             </div>
         </div>
@@ -158,6 +325,82 @@ function editNotePopup(id) {
     const editTitleInput = document.getElementById('editTitle');
     const editContentInput = document.getElementById('editContent');
     const saveEditBtn = document.getElementById('saveEditBtn');
+    const previewDiv = document.getElementById('markdownPreview');
+    const viewTitle = document.getElementById('viewTitle');
+    const toggleOptions = document.querySelectorAll('.toggle-option');
+
+    let currentView = 'edit';
+
+    // Function to update preview
+    function updatePreview() {
+        const content = editContentInput.value;
+        if (!previewDiv.hasAttribute('contenteditable')) {
+            previewDiv.innerHTML = content ? marked.parse(content) : '';
+        }
+    }
+
+    // Function to sync preview back to textarea
+    function syncPreviewToTextarea() {
+        if (previewDiv.hasAttribute('contenteditable')) {
+            editContentInput.value = previewDiv.textContent || '';
+        }
+    }
+
+    // Toggle between edit and preview
+    function switchView(view) {
+        currentView = view;
+        
+        // Update toggle buttons
+        toggleOptions.forEach(option => {
+            option.classList.toggle('active', option.dataset.view === view);
+        });
+
+        if (view === 'edit') {
+            // Switch to text editing mode
+            previewDiv.removeAttribute('contenteditable');
+            editContentInput.style.display = 'block';
+            previewDiv.style.display = 'none';
+            viewTitle.textContent = '📝 Edit your note';
+        } else {
+            // Switch to live preview editing mode
+            syncPreviewToTextarea(); // Sync any changes first
+            updatePreview(); // Update the preview
+            previewDiv.setAttribute('contenteditable', 'true');
+            editContentInput.style.display = 'none';
+            previewDiv.style.display = 'block';
+            viewTitle.textContent = '👁️ Live Preview (Editable)';
+        }
+    }
+
+    // Add toggle event listeners
+    toggleOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            switchView(option.dataset.view);
+        });
+    });
+
+    // Update preview on input (for when switching to preview)
+    editContentInput.addEventListener('input', updatePreview);
+
+    // Handle preview editing - sync back to textarea on input
+    previewDiv.addEventListener('input', () => {
+        if (previewDiv.hasAttribute('contenteditable')) {
+            editContentInput.value = previewDiv.textContent || '';
+        }
+    });
+
+    // Handle paste in preview - convert to plain text
+    previewDiv.addEventListener('paste', (e) => {
+        if (previewDiv.hasAttribute('contenteditable')) {
+            e.preventDefault();
+            const text = (e.clipboardData || window.clipboardData).getData('text');
+            document.execCommand('insertText', false, text);
+            syncPreviewToTextarea();
+        }
+    });
+
+    // Initial preview update
+    updatePreview();
 
     handleKeyBinds(id, editTitleInput, editContentInput, saveEditBtn);
 }
