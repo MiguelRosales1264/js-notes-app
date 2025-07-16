@@ -292,23 +292,12 @@ button:hover {
     line-height: 1.6;
     overflow-y: auto;
     font-family: 'Segoe UI', sans-serif;
-    transition: border-color 0.2s ease;
-}
-
-.markdown-preview[contenteditable="true"]:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    text-align: left;
+    white-space: pre-wrap;
 }
 
 .markdown-preview:empty::before {
     content: "Preview will appear here...";
-    color: #9ca3af;
-    font-style: italic;
-}
-
-.markdown-preview[contenteditable="true"]:empty::before {
-    content: "Type here to see live preview...";
     color: #9ca3af;
     font-style: italic;
 }

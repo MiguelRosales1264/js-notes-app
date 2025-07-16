@@ -213,16 +213,7 @@ function addNotesPopup() {
     // Function to update preview
     function updatePreview() {
         const content = noteContentInput.value;
-        if (!previewDiv.hasAttribute('contenteditable')) {
-            previewDiv.innerHTML = content ? marked.parse(content) : '';
-        }
-    }
-
-    // Function to sync preview back to textarea
-    function syncPreviewToTextarea() {
-        if (previewDiv.hasAttribute('contenteditable')) {
-            noteContentInput.value = previewDiv.textContent || '';
-        }
+        previewDiv.innerHTML = content ? marked.parse(content) : '';
     }
 
     // Toggle between edit and preview
@@ -241,13 +232,12 @@ function addNotesPopup() {
             previewDiv.style.display = 'none';
             viewTitle.textContent = '📝 Write your note';
         } else {
-            // Switch to live preview editing mode
-            syncPreviewToTextarea(); // Sync any changes first
+            // Switch to preview mode (read-only)
+            previewDiv.removeAttribute('contenteditable');
             updatePreview(); // Update the preview
-            previewDiv.setAttribute('contenteditable', 'true');
             noteContentInput.style.display = 'none';
             previewDiv.style.display = 'block';
-            viewTitle.textContent = '👁️ Live Preview (Editable)';
+            viewTitle.textContent = '👁️ Preview';
         }
     }
 
@@ -261,22 +251,7 @@ function addNotesPopup() {
     // Update preview on input (for when switching to preview)
     noteContentInput.addEventListener('input', updatePreview);
 
-    // Handle preview editing - sync back to textarea on input
-    previewDiv.addEventListener('input', () => {
-        if (previewDiv.hasAttribute('contenteditable')) {
-            noteContentInput.value = previewDiv.textContent || '';
-        }
-    });
-
-    // Handle paste in preview - convert to plain text
-    previewDiv.addEventListener('paste', (e) => {
-        if (previewDiv.hasAttribute('contenteditable')) {
-            e.preventDefault();
-            const text = (e.clipboardData || window.clipboardData).getData('text');
-            document.execCommand('insertText', false, text);
-            syncPreviewToTextarea();
-        }
-    });
+    // Preview is now read-only, no input/paste handlers needed
 
     // Initial preview update
     updatePreview();
@@ -334,16 +309,7 @@ function editNotePopup(id) {
     // Function to update preview
     function updatePreview() {
         const content = editContentInput.value;
-        if (!previewDiv.hasAttribute('contenteditable')) {
-            previewDiv.innerHTML = content ? marked.parse(content) : '';
-        }
-    }
-
-    // Function to sync preview back to textarea
-    function syncPreviewToTextarea() {
-        if (previewDiv.hasAttribute('contenteditable')) {
-            editContentInput.value = previewDiv.textContent || '';
-        }
+        previewDiv.innerHTML = content ? marked.parse(content) : '';
     }
 
     // Toggle between edit and preview
@@ -362,13 +328,12 @@ function editNotePopup(id) {
             previewDiv.style.display = 'none';
             viewTitle.textContent = '📝 Edit your note';
         } else {
-            // Switch to live preview editing mode
-            syncPreviewToTextarea(); // Sync any changes first
+            // Switch to preview mode (read-only)
+            previewDiv.removeAttribute('contenteditable');
             updatePreview(); // Update the preview
-            previewDiv.setAttribute('contenteditable', 'true');
             editContentInput.style.display = 'none';
             previewDiv.style.display = 'block';
-            viewTitle.textContent = '👁️ Live Preview (Editable)';
+            viewTitle.textContent = '👁️ Preview';
         }
     }
 
@@ -382,22 +347,7 @@ function editNotePopup(id) {
     // Update preview on input (for when switching to preview)
     editContentInput.addEventListener('input', updatePreview);
 
-    // Handle preview editing - sync back to textarea on input
-    previewDiv.addEventListener('input', () => {
-        if (previewDiv.hasAttribute('contenteditable')) {
-            editContentInput.value = previewDiv.textContent || '';
-        }
-    });
-
-    // Handle paste in preview - convert to plain text
-    previewDiv.addEventListener('paste', (e) => {
-        if (previewDiv.hasAttribute('contenteditable')) {
-            e.preventDefault();
-            const text = (e.clipboardData || window.clipboardData).getData('text');
-            document.execCommand('insertText', false, text);
-            syncPreviewToTextarea();
-        }
-    });
+    // Preview is now read-only, no input/paste handlers needed
 
     // Initial preview update
     updatePreview();
